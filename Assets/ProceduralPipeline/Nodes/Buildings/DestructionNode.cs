@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using XNode;
 
+[CreateNodeMenu("Buildings/Add Building Destruction")]
 
 public class DestructionNode : ExtendedNode
 {
