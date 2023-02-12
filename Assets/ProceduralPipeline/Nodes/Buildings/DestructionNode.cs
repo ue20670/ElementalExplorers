@@ -9,45 +9,53 @@ using XNode;
 public class DestructionNode : ExtendedNode
 {
     [Input] public GameObject[] inputBuildings;
+    [Input] public GameObject comparisonObject;
     [Input] public float quantity;
     [Input] public float scale;
-    [Output] public GameObject[] outputBuildings;
+    [Output] public GameObject[] buildingGameObjects;
 
     // Return the correct value of an output port when requested
     public override object GetValue(NodePort port)
     {
 
-        if (port.fieldName == "outputBuildings")
+        if (port.fieldName == "buildingGameObjects")
         {
-            return inputBuildings;
+            return buildingGameObjects;
         }
+        Debug.LogWarning("Output not found!");
         return null;
     }
 
     public override void CalculateOutputs(Action<bool> callback)
     {
         // setup inputs
-        GameObject[] buildings = GetInputValue("buildingData", inputBuildings);
-        float q = GetInputValue("buildingData", quantity);
-        float s = GetInputValue("buildingData", scale);
+        GameObject[] buildings = GetInputValue("inputBuildings", inputBuildings);
+        Debug.Log("This is running");
+        Debug.Log(buildings.Length);
+        GameObject comparison = GetInputValue("comparisonObject", comparisonObject);
+        Debug.Log(comparison);
+        float q = GetInputValue("quantity", quantity);
+        float s = GetInputValue("scale", scale);
 
         // setup outputs
         List<GameObject> gameObjects = new List<GameObject>();
 
-
-
         foreach (GameObject building in buildings)
         {
-            GameObject buildingGO = AddBuildingDestruction(building, q, s);
+            GameObject buildingGO = AddBuildingDestruction(building, comparison, q, s);
             gameObjects.Add(buildingGO);
         }
 
-        outputBuildings = gameObjects.ToArray();
+        // buildingGameObjects = new List<GameObject>().ToArray();
+        buildingGameObjects = gameObjects.ToArray();
+        Debug.Log(buildingGameObjects.Length);
         callback.Invoke(true);
     }
 
-    private GameObject AddBuildingDestruction(GameObject building, float q, float s)
+    private GameObject AddBuildingDestruction(GameObject building, GameObject comparison, float q, float s)
     {
+        MeshFilter mesh = building.GetComponent<MeshFilter>();
+        mesh.sharedMesh = comparison.GetComponent<MeshFilter>().sharedMesh;
         return building;
     }
 }
