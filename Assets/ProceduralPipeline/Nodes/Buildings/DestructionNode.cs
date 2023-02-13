@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 using XNode;
+using Parabox.CSG;
+using Random = UnityEngine.Random;
 
 [CreateNodeMenu("Buildings/Add Building Destruction")]
 
@@ -40,10 +42,14 @@ public class DestructionNode : ExtendedNode
         // setup outputs
         List<GameObject> gameObjects = new List<GameObject>();
 
+        int count = 0;
         foreach (GameObject building in buildings)
         {
             GameObject buildingGO = AddBuildingDestruction(building, comparison, q, s);
             gameObjects.Add(buildingGO);
+            count += 1;
+            Debug.Log("Buildings Destroyed " + count);
+            if (count == 2) break;
         }
 
         // buildingGameObjects = new List<GameObject>().ToArray();
@@ -54,8 +60,25 @@ public class DestructionNode : ExtendedNode
 
     private GameObject AddBuildingDestruction(GameObject building, GameObject comparison, float q, float s)
     {
-        MeshFilter mesh = building.GetComponent<MeshFilter>();
-        mesh.sharedMesh = comparison.GetComponent<MeshFilter>().sharedMesh;
+        // Place comparison object at one corner of the mesh
+        // comparison.transform.position = building.GetComponent<MeshFilter>().sharedMesh.vertices[0];
+        
+        // Add comparison object as child of building
+        GameObject go = GameObject.Instantiate(
+            comparison,
+            building.transform.position + building.GetComponent<MeshFilter>().sharedMesh.vertices[0],
+            Random.rotation,
+            building.transform
+            );
+        Debug.Log("The comparison location is: " + go.transform.position);
+
+        // Calculate the result of a boolean subtraction operation
+        // Model result = CSG.Subtract(building, comparison);
+        
+        // Create a gameObject to render the result
+        // building.GetComponent<MeshFilter>().sharedMesh = result.mesh;
+        // building.GetComponent<MeshRenderer>().sharedMaterials = result.materials.ToArray();
+        
         return building;
     }
 }
