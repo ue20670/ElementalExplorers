@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 using XNode;
-using Parabox.CSG;
 using Random = UnityEngine.Random;
 
 [CreateNodeMenu("Buildings/Add Building Destruction")]
@@ -60,10 +59,7 @@ public class DestructionNode : ExtendedNode
 
     private GameObject AddBuildingDestruction(GameObject building, GameObject comparison, float q, float s)
     {
-        // Place comparison object at one corner of the mesh
-        // comparison.transform.position = building.GetComponent<MeshFilter>().sharedMesh.vertices[0];
-        
-        // Add comparison object as child of building
+        // Place comparison object at one corner of the mesh and add object as child of building
         GameObject go = GameObject.Instantiate(
             comparison,
             building.transform.position + building.GetComponent<MeshFilter>().sharedMesh.vertices[0],
@@ -73,11 +69,6 @@ public class DestructionNode : ExtendedNode
         Debug.Log("The comparison location is: " + go.transform.position);
 
         // Calculate the result of a boolean subtraction operation
-        // Model result = CSG.Subtract(building, comparison);
-        
-        // Create a gameObject to render the result
-        // building.GetComponent<MeshFilter>().sharedMesh = result.mesh;
-        // building.GetComponent<MeshRenderer>().sharedMaterials = result.materials.ToArray();
         
         return building;
     }
