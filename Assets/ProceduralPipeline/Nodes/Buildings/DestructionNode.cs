@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using XNode;
 using Random = UnityEngine.Random;
@@ -56,19 +57,20 @@ public class DestructionNode : ExtendedNode
         callback.Invoke(true);
     }
 
-    private void TestCSG(GameObject comparison)
+    private void TestCSG(GameObject knife)
     {
         // Initialize clay in the scene
-        GameObject clay = GameObject.Instantiate(comparison);        
+        GameObject clay = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        Vector3 scaleVector = new Vector3(10f, 10f, 10f);
+        clay.transform.localScale = scaleVector;
 
         // Place comparison object at one corner of the mesh and add object as child of building
-        Vector3[] vertices = clay.GetComponent<MeshFilter>().sharedMesh.vertices;
-        // comparison = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        int randomNum = 0; // Random.Range(0, vertices.Length);
-        Vector3 randomVertex = vertices[randomNum];
-        
+        Vector3 randomVertex = clay.GetComponent<MeshFilter>().sharedMesh.vertices[0];
+        randomVertex.x *= scaleVector.x;
+        randomVertex.y *= scaleVector.y;
+        randomVertex.z *= scaleVector.z;
+            
         // Initialize knife in the scene
-        GameObject knife = GameObject.Instantiate(comparison);
         knife.transform.position = clay.transform.position + randomVertex;
         knife.transform.rotation = Random.rotation;
 
@@ -79,7 +81,11 @@ public class DestructionNode : ExtendedNode
         var composite = new GameObject();
         composite.AddComponent<MeshFilter>().sharedMesh = result.mesh;
         composite.AddComponent<MeshRenderer>().sharedMaterials = result.materials.ToArray();
-        GameObject.Instantiate(composite);
+        
+        // Clean up
+        Destroy(clay);
+        Destroy(knife);
+
         Debug.Log("Completed Subtraction");
     }
 
