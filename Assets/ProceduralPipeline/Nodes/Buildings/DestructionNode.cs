@@ -39,25 +39,13 @@ public class DestructionNode : ExtendedNode
         // setup outputs
         List<GameObject> gameObjects = new List<GameObject>();
         
-        // Initialize two new meshes in the scene
-        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        sphere.transform.localScale = Vector3.one * 1.3f;
-
-        // Perform boolean operation
-        Model result = CSG.Subtract(cube, sphere);
-
-        // Create a gameObject to render the result
-        var composite = new GameObject();
-        composite.AddComponent<MeshFilter>().sharedMesh = result.mesh;
-        composite.AddComponent<MeshRenderer>().sharedMaterials = result.materials.ToArray();
-        Debug.Log("Completed Subtraction");
+        TestCSG(comparison);
 
         int count = 0;
         foreach (GameObject building in buildings)
         {
-            GameObject buildingGO = AddBuildingDestruction(building, comparison, q, s);
-            gameObjects.Add(buildingGO);
+            // GameObject buildingGO = AddBuildingDestruction(building, comparison, q, s);
+            // gameObjects.Add(buildingGO);
             count += 1;
             Debug.Log("Buildings Destroyed " + count);
             // if (count == 2) break;
@@ -66,6 +54,33 @@ public class DestructionNode : ExtendedNode
         // buildingGameObjects = new List<GameObject>().ToArray();
         buildingGameObjects = gameObjects.ToArray();
         callback.Invoke(true);
+    }
+
+    private void TestCSG(GameObject comparison)
+    {
+        // Initialize clay in the scene
+        GameObject clay = GameObject.Instantiate(comparison);        
+
+        // Place comparison object at one corner of the mesh and add object as child of building
+        Vector3[] vertices = clay.GetComponent<MeshFilter>().sharedMesh.vertices;
+        // comparison = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        int randomNum = 0; // Random.Range(0, vertices.Length);
+        Vector3 randomVertex = vertices[randomNum];
+        
+        // Initialize knife in the scene
+        GameObject knife = GameObject.Instantiate(comparison);
+        knife.transform.position = clay.transform.position + randomVertex;
+        knife.transform.rotation = Random.rotation;
+
+        // Perform boolean operation
+        Model result = CSG.Subtract(clay, knife);
+
+        // Create a gameObject to render the result
+        var composite = new GameObject();
+        composite.AddComponent<MeshFilter>().sharedMesh = result.mesh;
+        composite.AddComponent<MeshRenderer>().sharedMaterials = result.materials.ToArray();
+        GameObject.Instantiate(composite);
+        Debug.Log("Completed Subtraction");
     }
 
     private GameObject AddBuildingDestruction(GameObject building, GameObject comparison, float q, float s)

@@ -133,7 +133,7 @@ MonoBehaviour:
       _typeConstraint: 0
       _dynamic: 0
   inputBuildings: []
-  comparisonObject: {fileID: 887260130268929661, guid: 9a37c46349cb2244892e5ea547f09e0c, type: 3}
+  comparisonObject: {fileID: 3817999769908310797, guid: 9a37c46349cb2244892e5ea547f09e0c, type: 3}
   quantity: 0.5
   scale: 0
   buildingGameObjects:
