@@ -48,7 +48,7 @@ public class DestructionNode : ExtendedNode
             // GameObject buildingGO = AddBuildingDestruction(building, comparison, q, s);
             // gameObjects.Add(buildingGO);
             count += 1;
-            Debug.Log("Buildings Destroyed " + count);
+            // Debug.Log("Buildings Destroyed " + count);
             // if (count == 2) break;
         }
 
@@ -83,8 +83,7 @@ public class DestructionNode : ExtendedNode
         composite.AddComponent<MeshRenderer>().sharedMaterials = result.materials.ToArray();
         
         // Clean up
-        Destroy(clay);
-        Destroy(knife);
+        DestroyImmediate(clay);
 
         Debug.Log("Completed Subtraction");
     }
