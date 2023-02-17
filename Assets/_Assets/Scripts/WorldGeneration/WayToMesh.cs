@@ -1,10 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Unity.Jobs;
-using Unity.VisualScripting;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class WayToMesh
 {
@@ -158,7 +153,8 @@ public class WayToMesh
         bool success = true;
         try
         {
-            success = CreateRoof(building, way, verticies, triangles);
+            success = ClosePolygon(building, way, verticies, triangles, true);
+            success = ClosePolygon(building, way, verticies, triangles, false);
         }
         catch (System.Exception)
         {
@@ -211,12 +207,23 @@ public class WayToMesh
         }
     }
 
-    private static bool CreateRoof(OSMBuildingData building, Vector2[] way, List<Vector3> verticies, List<int> triangles)
+    private static bool ClosePolygon(OSMBuildingData building, Vector2[] way, List<Vector3> verticies, List<int> triangles, bool roof)
     {
+        float height = roof ? building.buildingHeight : 0;
+
+        if (roof)
+        {
+            way = MakeAntiClockwise(way);
+        }
+        else
+        {
+            way = MakeClockwise(way);
+        }
+
         //create roof
         for (int i = 0; i < way.Length; i++)
         {
-            verticies.Add(new Vector3(way[i].x, building.buildingHeight, way[i].y));
+            verticies.Add(new Vector3(way[i].x, height, way[i].y));
         }
 
         int holeVerticies = 0;
@@ -225,12 +232,19 @@ public class WayToMesh
         {
             for (int i = 0; i < building.holes.Length; i++)
             {
-                building.holes[i] = MakeClockwise(building.holes[i]);
+                if (roof)
+                {
+                    building.holes[i] = MakeClockwise(building.holes[i]);
+                }
+                else
+                {
+                    building.holes[i] = MakeAntiClockwise(building.holes[i]);
+                }
 
                 holeVerticies += building.holes[i].Length;
                 for (int j = 0; j < building.holes[i].Length; j++)
                 {
-                    verticies.Add(new Vector3(building.holes[i][j].x, building.buildingHeight, building.holes[i][j].y));
+                    verticies.Add(new Vector3(building.holes[i][j].x, height, building.holes[i][j].y));
                 }
             }
 
