@@ -211,15 +211,6 @@ public class WayToMesh
     {
         float height = roof ? building.buildingHeight : 0;
 
-        if (roof)
-        {
-            way = MakeAntiClockwise(way);
-        }
-        else
-        {
-            way = MakeClockwise(way);
-        }
-
         //create roof
         for (int i = 0; i < way.Length; i++)
         {
@@ -232,14 +223,7 @@ public class WayToMesh
         {
             for (int i = 0; i < building.holes.Length; i++)
             {
-                if (roof)
-                {
-                    building.holes[i] = MakeClockwise(building.holes[i]);
-                }
-                else
-                {
-                    building.holes[i] = MakeAntiClockwise(building.holes[i]);
-                }
+                building.holes[i] = MakeClockwise(building.holes[i]);
 
                 holeVerticies += building.holes[i].Length;
                 for (int j = 0; j < building.holes[i].Length; j++)
@@ -266,6 +250,20 @@ public class WayToMesh
         {
             //old ear clipping implementation
             //List<int> roof = FillPolygon(verticies.GetRange(verticies.Count - way.Length, way.Length));
+
+            //flip normals if floor
+            if (!roof)
+            {
+                for (int i = 0; i < roofTriangles.Length / 3; i++)
+                {
+                    int index = i * 3;
+                    int t2 = roofTriangles[index + 1];
+                    int t3 = roofTriangles[index + 2];
+                    roofTriangles[index + 1] = t3;
+                    roofTriangles[index + 2] = t2;
+                }
+            }
+
             for (int i = 0; i < roofTriangles.Length; i++)
             {
                 roofTriangles[i] += verticies.Count - way.Length - holeVerticies;
