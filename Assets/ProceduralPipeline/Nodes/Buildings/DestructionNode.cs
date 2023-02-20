@@ -43,14 +43,19 @@ public class DestructionNode : ExtendedNode
         TestCSG(comparison);
 
         int count = 0;
+        int failure = 0;
         foreach (GameObject building in buildings)
         {
-            // GameObject buildingGO = AddBuildingDestruction(building, comparison, q, s);
-            // gameObjects.Add(buildingGO);
+            GameObject buildingGO = AddBuildingDestruction(building, comparison, q, s);
+            if (buildingGO == null)
+            {
+                failure++;
+            }
+            gameObjects.Add(buildingGO);
             count += 1;
-            // Debug.Log("Buildings Destroyed " + count);
-            // if (count == 2) break;
+            Debug.Log("Buildings Destroyed " + count);
         }
+        Debug.Log("failed: " + failure);
 
         // buildingGameObjects = new List<GameObject>().ToArray();
         buildingGameObjects = gameObjects.ToArray();
@@ -111,13 +116,14 @@ public class DestructionNode : ExtendedNode
             // Create a gameObject to render the result
             building.GetComponent<MeshFilter>().sharedMesh = result.mesh;
             building.GetComponent<MeshRenderer>().sharedMaterials = result.materials.ToArray();
-            
+
             // Destroy the comparison GO if successful
-            Destroy(go);
+            //DestroyImmediate(go);
         }
         catch (StackOverflowException e)
         {
             Debug.Log("CSG Failure: " + e);
+            return null;
         }
 
         return building;
