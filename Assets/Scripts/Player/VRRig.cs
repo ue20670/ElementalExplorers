@@ -39,9 +39,10 @@ public class VRRig : MonoBehaviour
     void LateUpdate()
     {
         transform.position = headConstriant.position + headBodyOffset;
-        transform.forward = Vector3.ProjectOnPlane(headConstriant.up, Vector3.up).normalized;
+        transform.forward = Vector3.Lerp(transform.forward, Vector3.ProjectOnPlane(headConstriant.up, Vector3.up).normalized, Time.deltaTime);
         head.Map();
         leftHand.Map();
         rightHand.Map();
+        transform.position = new Vector3(51, 4, 18);
     }
 }
